@@ -3,6 +3,7 @@ node_modules
 
 # Secrets
 env.*
+.env
 .env.*
 config.prod.json
 config.production.json
@@ -14,6 +15,3 @@ build/
 dist/
 .serverless
 .webpack
-
-# Misc
-.DS_Store

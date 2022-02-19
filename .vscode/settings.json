@@ -1,8 +1,4 @@
 {
-  "gitSemanticCommit.types": [
-    "(ivago-waste-collection)",
-    "(contentful-webhook-twitter-fn)",
-    "(discogs-random-record)",
-    "(vrt-radio-api-mapper)",
-  ],
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.formatOnSave": true,
 }
