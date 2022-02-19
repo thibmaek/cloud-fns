@@ -1,0 +1,23 @@
+{
+  "Augment process.env": {
+    "scope": "typescript",
+    "prefix": "env",
+    "body": [
+      "declare namespace NodeJS {",
+      "  interface ProcessEnv {",
+      "    $ENV: string;",
+      "  }",
+      "}",
+    ],
+  },
+  "NPM run-tasks": {
+    "scope": "json",
+    "prefix": "tasks",
+    "body": [
+      "\"start\": \"sls offline\",",
+      "\"dev\": \"sls invoke local -f $function_name\",",
+      "\"build\": \"sls package -p dist\",",
+      "\"deploy\": \"sls deploy\"",
+    ]
+  },
+}

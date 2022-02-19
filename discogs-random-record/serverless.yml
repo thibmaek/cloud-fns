@@ -1,18 +1,21 @@
-service:
-  name: discogs-random-record
+org: thibaultmaekelbergh
+app: 'discogs-services'
+service: 'discogs-random-record'
 
 plugins:
-  - serverless-webpack
+  - serverless-plugin-typescript
+  - serverless-offline
 
 provider:
   name: aws
-  runtime: nodejs8.10
+  runtime: ${file(../sls.global.yml):aws_nodejs_runtime}
+  region: ${file(../sls.global.yml):aws_region}
   environment:
     DISCOGS_API_TOKEN: ${file(./env.json):DISCOGS_API_TOKEN}
 
 functions:
   getRandomRecord:
-    handler: handler.getRandomRecord
+    handler: index.getRandomRecord
     events:
       - http:
           method: get

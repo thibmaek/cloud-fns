@@ -1,0 +1,26 @@
+org: thibaultmaekelbergh
+app: 'contentful-services'
+service: 'contentful-webhook-twitter'
+
+plugins:
+  - serverless-plugin-typescript
+  - serverless-offline
+
+provider:
+  name: aws
+  runtime: ${file(../sls.global.yml):aws_nodejs_runtime}
+  region: ${file(../sls.global.yml):aws_region}
+  environment:
+    TWITTER_ACCESS_TOKEN_SECRET: ${file(./env.json):TWITTER_ACCESS_TOKEN_SECRET}
+    TWITTER_ACCESS_TOKEN: ${file(./env.json):TWITTER_ACCESS_TOKEN}
+    TWITTER_CONSUMER_KEY: ${file(./env.json):TWITTER_CONSUMER_KEY}
+    TWITTER_CONSUMER_SECRET: ${file(./env.json):TWITTER_CONSUMER_SECRET}
+
+functions:
+  contentful_webhook_twitter:
+    handler: index.handler
+    events:
+      - http:
+          method: post
+          cors: true
+          path: '/'

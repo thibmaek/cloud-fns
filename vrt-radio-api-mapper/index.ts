@@ -1,12 +1,15 @@
+import 'source-map-support/register';
+import type { APIGatewayProxyHandler } from 'aws-lambda';
+
 import getChannelFromName from './lib/getChannelFromName';
 import { getCurrentProgram } from './lib/getProgram';
-import getPlaylist from './lib/getPlaylist';
+import getPlaylist, { PlaylistItem } from './lib/getPlaylist';
 
-import channels from './channels';
+import { channels } from './channels';
 
-const mapResponse = ({ properties, channelCode, onairType, startDate, endDate }) => {
-  const artist = properties.filter(prop => prop.key === `ARTISTNAME`)[0].value;
-  const title = properties.filter(prop => prop.key === `TITLE`)[0].value;
+function mapResponse({ properties, channelCode, onairType, startDate, endDate }: PlaylistItem) {
+  const artist = properties.find(p => p.key === `ARTISTNAME`)?.value;
+  const title = properties.find(p => p.key === `TITLE`)?.value;
 
   return {
     artist,
@@ -19,11 +22,16 @@ const mapResponse = ({ properties, channelCode, onairType, startDate, endDate })
     trackName: `${artist} - ${title}`,
     type: onairType,
   };
-};
+}
 
-export const handler = async (event, ctx, done) => {
+export const handler: APIGatewayProxyHandler = async evt => {
+  if (!evt.pathParameters?.channelName) {
+    return { statusCode: 400, body: "Paramter 'channelName' missing" };
+  }
+
+  const { code: channelCode } = getChannelFromName(evt.pathParameters.channelName);
+
   try {
-    const { code: channelCode } = getChannelFromName(event.pathParameters.channelCode);
     const [program, playlist] = await Promise.all([
       getCurrentProgram(channelCode),
       getPlaylist(channelCode),
@@ -31,25 +39,27 @@ export const handler = async (event, ctx, done) => {
 
     const parsedResponse = playlist.onairs.map(mapResponse);
 
-    done(null, {
+    return {
+      statusCode: 200,
       body: JSON.stringify({
         current: parsedResponse.find(airing => airing.type === `NOW`),
         previous: parsedResponse.find(airing => airing.type === `PREVIOUS`),
         program: program.title,
         timestamp: new Date().toISOString(),
       }),
-      statusCode: 200,
-    });
-  } catch (error) {
-    done(null, {
+    };
+  } catch (err) {
+    console.error(err);
+    return {
+      statusCode: 400,
       body: JSON.stringify({
         availableChannels: channels,
         error: `Invalid channel slug supplied`,
         request: {
-          channel: event.pathParameters.channelCode,
+          channel: evt.pathParameters.channelCode,
         },
         statusCode: 400,
       }),
-    });
+    };
   }
 };

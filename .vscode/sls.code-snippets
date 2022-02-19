@@ -1,0 +1,37 @@
+{
+  "Serverless config": {
+    "scope": "yaml",
+    "prefix": "sls",
+    "body": [
+      "org: thibaultmaekelbergh",
+      "app: '$app'",
+      "service: '$service'",
+      "",
+      "plugins:",
+      "  - serverless-plugin-typescript",
+      "  - serverless-offline",
+      "",
+      "provider:",
+      "  name: aws",
+      "  runtime: ${file(../sls.global.yml):aws_nodejs_runtime}",
+      "  region: ${file(../sls.global.yml):aws_region}",
+    ],
+  },
+  "SLS function": {
+    "scope": "yaml",
+    "prefix": "fn",
+    "body": [
+      "sls_fn_name:",
+      "  handler: index.handler",
+      "  events:",
+      "    - http:",
+      "        method: get",
+      "        cors: ${1|true,false|}",
+      "        path: '/{param}'",
+      "        request:",
+      "          parameters:",
+      "            paths:",
+      "              param: true",
+    ],
+  },
+}

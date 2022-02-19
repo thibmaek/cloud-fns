@@ -1,17 +1,15 @@
 org: thibaultmaekelbergh
-app: ivago-waste-collection
-
-service:
-  name: ivago-waste-collection
+app: 'ivago-waste-collection'
+service: 'ivago-waste-collection'
 
 plugins:
+  - serverless-plugin-typescript
   - serverless-offline
-  - serverless-webpack
 
 provider:
   name: aws
-  runtime: nodejs10.x
-  region: eu-central-1
+  runtime: ${file(../sls.global.yml):aws_nodejs_runtime}
+  region: ${file(../sls.global.yml):aws_region}
 
 functions:
   getWasteCollection:
@@ -19,7 +17,7 @@ functions:
     events:
       - http:
           method: get
-          path: /{calendar}
+          path: '/{calendar}'
           request:
             parameters:
               paths:

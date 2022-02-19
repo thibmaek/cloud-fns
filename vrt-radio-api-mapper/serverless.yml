@@ -1,23 +1,25 @@
-service:
-  name: aws-nodejs-ecma-script
+org: thibaultmaekelbergh
+app: 'vrt-api-service'
+service: 'vrt-radio-api-mapper'
 
 plugins:
+  - serverless-plugin-typescript
   - serverless-offline
-  - serverless-webpack
 
 provider:
   name: aws
-  runtime: nodejs8.10
+  runtime: ${file(../sls.global.yml):aws_nodejs_runtime}
+  region: ${file(../sls.global.yml):aws_region}
 
 functions:
   vrt_api_mapper:
-    handler: mapper.handler
+    handler: index.handler
     events:
       - http:
           method: get
           cors: true
-          path: '/{channelCode}'
+          path: '/{channelName}'
           request:
             parameters:
               paths:
-                channelCode: true
+                channelName: true

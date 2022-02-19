@@ -1,31 +1,33 @@
 org: thibaultmaekelbergh
-app: contentful-services
-
-service:
-  name: contentful-services
+app: 'contentful-services'
+service: 'contentful-services'
 
 plugins:
-  - serverless-webpack
+  - serverless-plugin-typescript
+  - serverless-offline
 
 provider:
   name: aws
-  runtime: nodejs12.x
-  region: eu-central-1
+  runtime: ${file(../sls.global.yml):aws_nodejs_runtime}
+  region: ${file(../sls.global.yml):aws_region}
   environment:
-    SPACE_ID: ${file(./env.yaml):contentful.space_id}
-    MANAGEMENT_TOKEN: ${file(./env.yaml):contentful.management_token}
-  iamRoleStatements:
-    - Effect: Allow
-      Action:
-        - s3:GetObject
-        - s3:PutObject
-      Resource:
-        - 'arn:aws:s3:::${self:service.name}/*'
+    BUCKET_NAME: ${file(./env.json):BUCKET_NAME}
+    MANAGEMENT_TOKEN: ${file(./env.json):MANAGEMENT_TOKEN}
+    SPACE_ID: ${file(./env.json):SPACE_ID}
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - s3:GetObject
+            - s3:PutObject
+          Resource:
+            - 'arn:aws:s3:::${self:service}/*'
 
 functions:
   backupSpace:
     handler: spaceBackup.handler
     environment:
-      BUCKET_NAME: ${self:service.name}
+      BUCKET_NAME: ${self:service}
     events:
       - schedule: rate(12 hours)
