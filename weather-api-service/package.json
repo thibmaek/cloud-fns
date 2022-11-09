@@ -1,0 +1,13 @@
+{
+  "name": "weather-api-services",
+  "scripts": {
+    "start": "sls offline",
+    "dev": "sls invoke local -f weather_services",
+    "build": "sls package -p dist",
+    "deploy": "sls deploy --stage prod"
+  },
+  "devDependencies": {
+    "serverless-offline": "^11.3.0",
+    "serverless-python-requirements": "^6.0.0"
+  }
+}

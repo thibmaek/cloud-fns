@@ -1,3 +1,4 @@
 # AWS
 aws_region: eu-central-1
 aws_nodejs_runtime: nodejs14.x
+aws_python_runtime: python3.9

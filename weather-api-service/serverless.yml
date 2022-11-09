@@ -1,0 +1,25 @@
+org: thibaultmaekelbergh
+app: 'weather-api-service'
+service: 'weather-api-service'
+
+plugins:
+  - serverless-python-requirements
+  - serverless-offline
+
+provider:
+  name: aws
+  runtime: ${file(../sls.global.yml):aws_python_runtime}
+  region: ${file(../sls.global.yml):aws_region}
+
+functions:
+  weather_services:
+    handler: handler.main
+    events:
+      - http:
+          method: get
+          cors: true
+          path: '/precipation-alerts/{type}'
+          request:
+            parameters:
+              paths:
+                type: true
